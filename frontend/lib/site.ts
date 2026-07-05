@@ -4,5 +4,5 @@ export const SITE = {
   nameEn: "Hiiragi",
   instagram: "https://www.instagram.com/ragi_h_?igsh=MTRnbXI2ajR6MTljdg%3D%3D&utm_source=qr",
   x: "https://x.com/shunshun8_20?s=11",
-  email: "hiiragi@example.com",
+  email: "h.72ragi51@gmail.com",
 };
