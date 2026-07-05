@@ -2,6 +2,19 @@
 
 hiiragi ポートフォリオサイト(Next.js 16 + Laravel 13 API + SQLite)を AWS に公開するための手順。
 
+> **デプロイ実績(2026-07-05)**: 本手順に沿って AWS アカウント `319641750023`(aws88827@gmail.com)へデプロイ済み。
+>
+> | 項目 | 値 |
+> |---|---|
+> | EC2 インスタンス | `i-0aa1037a615731bf5`(hiiragi-web / t4g.small / ap-northeast-1a) |
+> | Elastic IP | `3.114.80.53` |
+> | セキュリティグループ | `sg-00ea1e2070fc26127`(hiiragi-web) |
+> | SSH | `ssh -i ~/.ssh/hiiragi.pem ec2-user@3.114.80.53` |
+> | AWS CLI プロファイル | `--profile hiiragi`(IAM ユーザー hiiragi-admin) |
+>
+> ドメイン未取得のため、現状は IP 直アクセス(`http://3.114.80.53`)+単一 Nginx server ブロック構成(下記 6′ 参照)。
+> ドメイン取得後に「2. Route 53」「6. Nginx 設定」「7. HTTPS 化」を適用する。
+
 ## 0. 構成の方針
 
 小規模なポートフォリオサイトなので、**EC2 1台に全部載せる構成**を推奨する。
@@ -95,13 +108,12 @@ ssh -i ~/.ssh/hiiragi.pem ec2-user@<Elastic IP>
 ```bash
 sudo dnf update -y
 
-# PHP 8.3 + 拡張(Laravel 13 に必要なもの)
-sudo dnf install -y php8.3 php8.3-fpm php8.3-cli php8.3-mbstring \
-  php8.3-xml php8.3-pdo php8.3-sqlite3 php8.3-gd php8.3-opcache php8.3-intl
+# PHP 8.4 + 拡張(composer.lock が PHP >= 8.4.1 を要求するため 8.3 では不可)
+sudo dnf install -y php8.4 php8.4-fpm php8.4-cli php8.4-mbstring \
+  php8.4-xml php8.4-pdo php8.4-gd php8.4-opcache php8.4-intl php8.4-zip
 
-# Composer
-curl -sS https://getcomposer.org/installer | php
-sudo mv composer.phar /usr/local/bin/composer
+# Composer(AL2023 の公式リポジトリにあるので dnf で入る)
+sudo dnf install -y composer
 
 # Node.js 22(Next.js 16 の要件を満たす LTS)
 sudo dnf install -y nodejs22
@@ -267,13 +279,75 @@ server {
 }
 ```
 
-PHP-FPM の実行ユーザーを nginx に合わせる(`/etc/php-fpm.d/www.conf` の `user`/`group` を確認)後:
+PHP-FPM の実行ユーザーを nginx に合わせる(AL2023 のデフォルトは `apache`):
 
 ```bash
+sudo sed -i -e 's/^user = apache/user = nginx/' -e 's/^group = apache/group = nginx/' /etc/php-fpm.d/www.conf
+sudo systemctl restart php-fpm
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
 この時点で `http://hiiragi.example.com` と `http://api.hiiragi.example.com/api/works` が表示されることを確認。
+
+> **注意**: Next.js はレスポンスヘッダーが大きく、Nginx デフォルトの proxy バッファ(4KB)を超えて
+> **502 Bad Gateway** になる。`proxy_pass` の直後に必ず以下を入れること:
+>
+> ```nginx
+> proxy_buffer_size 32k;
+> proxy_buffers 8 32k;
+> proxy_busy_buffers_size 64k;
+> ```
+
+### 6′. ドメインなし(IP 直アクセス)の場合の Nginx 設定
+
+ドメイン取得前は、サブドメインで振り分けられないため **単一 server ブロック**で
+`/` → Next.js、`/api`・`/storage` → Laravel にパスで振り分ける(現在の本番構成)。
+
+`/etc/nginx/conf.d/hiiragi.conf`:
+
+```nginx
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+
+    root /var/www/hiiragi/api/public;
+    index index.php;
+    client_max_body_size 10m;
+
+    # フロントエンド(Next.js)
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_buffer_size 32k;
+        proxy_buffers 8 32k;
+        proxy_busy_buffers_size 64k;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # API(Laravel)
+    location /api {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # アップロード画像(storage/app/public → public/storage)
+    location /storage/ {
+        try_files $uri =404;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php-fpm/www.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+```
+
+`/etc/nginx/nginx.conf` 内蔵のデフォルト server(80番)と衝突するため、
+そちらの `listen` を `8090` に退避してある。
+この構成では `.env` の `APP_URL` / `FRONTEND_URL`、フロントの `NEXT_PUBLIC_API_URL` はすべて `http://<Elastic IP>`。
 
 ---
 
