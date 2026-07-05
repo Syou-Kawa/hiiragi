@@ -38,7 +38,7 @@ export default async function Home() {
         <p className="role">やさしく、お客様の心に寄り添うデザインを。</p>
         <p className="lead">
           はじめまして、ひいらぎです。<br />
-          女性らしいかわいらしさと使いやすさを大切に、<br />
+          お客様に寄り添ったヒヤリングを大切に、<br />
           Webサイト・LP・バナーのデザインとコーディングを承っています。
         </p>
         <div className="hero-btns">
