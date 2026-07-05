@@ -12,9 +12,6 @@ function HeroDeco({ pos }: { pos: string }) {
       <ellipse cx="72" cy="18" rx="16" ry="8" transform="rotate(-40 72 18)" stroke="#7c9a72" strokeWidth="2" />
       <ellipse cx="48" cy="65" rx="14" ry="7" transform="rotate(30 48 65)" stroke="#7c9a72" strokeWidth="2" />
       <ellipse cx="55" cy="120" rx="14" ry="7" transform="rotate(-25 55 120)" stroke="#7c9a72" strokeWidth="2" />
-      <circle cx="140" cy="50" r="5" fill="#d9a5b3" /><circle cx="152" cy="60" r="5" fill="#d9a5b3" />
-      <circle cx="128" cy="60" r="5" fill="#d9a5b3" /><circle cx="140" cy="70" r="5" fill="#d9a5b3" />
-      <circle cx="140" cy="60" r="3.5" fill="#f3d7de" />
     </svg>
   );
 }

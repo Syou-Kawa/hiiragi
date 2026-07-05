@@ -79,6 +79,7 @@ export default function Service() {
       </section>
 
       <CtaBand
+        spaced
         title="まずは無料でお見積もり"
         text="ご予算やご要望に合わせて、いちばん良い形をご提案します。"
         label="制作を依頼する"
