@@ -12,8 +12,14 @@ hiiragi ポートフォリオサイト(Next.js 16 + Laravel 13 API + SQLite)を 
 > | SSH | `ssh -i ~/.ssh/hiiragi.pem ec2-user@3.114.80.53` |
 > | AWS CLI プロファイル | `--profile hiiragi`(IAM ユーザー hiiragi-admin) |
 >
-> ドメイン未取得のため、現状は IP 直アクセス(`http://3.114.80.53`)+単一 Nginx server ブロック構成(下記 6′ 参照)。
-> ドメイン取得後に「2. Route 53」「6. Nginx 設定」「7. HTTPS 化」を適用する。
+> **ドメイン・HTTPS 対応済み(2026-07-05)**: `hiiragi-portfolio.com` を Route 53 で取得(年 $14・自動更新 ON・WHOIS プライバシー保護 ON)。
+>
+> - 本番 URL: `https://hiiragi-portfolio.com`(フロント)/ `https://api.hiiragi-portfolio.com`(API)
+> - `www.hiiragi-portfolio.com` は apex へ 301 リダイレクト(CORS のオリジン一本化のため)
+> - 証明書は Let's Encrypt(3 ドメイン 1 枚)。`certbot-renew.timer` で自動更新 — **AL2023 はタイマーが自動起動しないので `systemctl enable --now certbot-renew.timer` が必要**
+> - S3 バックアップ: `hiiragi-backup-319641750023` へ毎日 JST 4:00(IAM ロール `hiiragi-ec2-backup`)
+>
+> 下記 6′ の IP 直アクセス構成は移行前の記録として残す。
 
 ## 0. 構成の方針
 
