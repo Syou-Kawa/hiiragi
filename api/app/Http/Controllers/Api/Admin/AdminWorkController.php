@@ -63,6 +63,23 @@ class AdminWorkController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    public function setFeatured(Request $request)
+    {
+        // トップページに表示する作品(最大3件)を丸ごと指定し直す。
+        // 送られた ID のみ is_featured=true、それ以外は false にリセットする。
+        $ids = $request->validate([
+            'ids' => ['present', 'array', 'max:3'],
+            'ids.*' => ['integer'],
+        ])['ids'];
+
+        Work::query()->update(['is_featured' => false]);
+        if (! empty($ids)) {
+            Work::whereIn('id', $ids)->update(['is_featured' => true]);
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
     private function storeImage(Request $request): string
     {
         $path = $request->file('image')->store('works', 'public');

@@ -18,6 +18,7 @@ class WorkController extends Controller
                 'category' => $w->category,
                 'description' => $w->description ?? '',
                 'image' => $w->image,
+                'is_featured' => (bool) $w->is_featured,
             ]),
             'categories' => $works->pluck('category')->unique()->values(),
         ]);

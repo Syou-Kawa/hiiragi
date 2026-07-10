@@ -24,6 +24,10 @@ export default async function Home() {
     // APIが起動していないときも表示は継続
   }
 
+  // 管理者がトップに指定した作品を優先表示。未指定なら従来どおり先頭3件。
+  const featured = data.works.filter((w) => w.is_featured);
+  const topWorks = (featured.length > 0 ? featured : data.works).slice(0, 3);
+
   return (
     <>
       <section className="hero">
@@ -72,7 +76,7 @@ export default async function Home() {
             <span className="ja">制作実績</span>
             <Flower />
           </div>
-          <WorksGrid works={data.works.slice(0, 3)} />
+          <WorksGrid works={topWorks} />
           <p style={{ textAlign: "center", marginTop: 36 }}>
             <Link href="/works" className="btn btn-primary">すべての作品を見る</Link>
           </p>

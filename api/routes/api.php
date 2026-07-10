@@ -17,4 +17,5 @@ Route::middleware('admin.token')->prefix('admin')->group(function () {
     Route::post('/works/{work}', [AdminWorkController::class, 'update']); // 画像付きのためPOST
     Route::delete('/works/{work}', [AdminWorkController::class, 'destroy']);
     Route::post('/works-reorder', [AdminWorkController::class, 'reorder']);
+    Route::post('/works-featured', [AdminWorkController::class, 'setFeatured']);
 });

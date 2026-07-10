@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Work extends Model
 {
-    protected $fillable = ['title', 'category', 'description', 'image_path', 'sort_order'];
+    protected $fillable = ['title', 'category', 'description', 'image_path', 'sort_order', 'is_featured'];
+
+    protected $casts = ['is_featured' => 'boolean'];
 
     protected $appends = ['image'];
 

@@ -51,6 +51,7 @@ frontend/
 - **作品登録/編集**: タイトル・カテゴリ・説明のフォーム+画像のドラッグ&ドロップ(プレビュー付き)。multipart で `POST /api/admin/works`(編集は `POST /api/admin/works/{id}`)
 - **削除**: `DELETE /api/admin/works/{id}`
 - **並び替え**: ID 配列を `POST /api/admin/works-reorder` へ送信
+- **トップ表示の指定**: 各作品の「☆トップに表示 / ★トップ表示中」トグルで、トップページ Works に出す作品を最大3件まで指定。ID 配列を `POST /api/admin/works-featured` へ送信(未指定時はトップは先頭3件を表示)
 - 保存すると公開側に即反映(公開側は `cache: "no-store"` で毎回取得)
 
 ※ `/admin` の URL 自体は公開されるが、パスワード+API トークンで保護。気になる場合は `app/admin` のフォルダ名を変えるだけで URL を変更できる。

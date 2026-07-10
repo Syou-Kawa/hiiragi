@@ -111,6 +111,14 @@ multipart/form-data。
 
 配列の先頭ほど大きい `sort_order` を振り直す(先頭 = count、末尾 = 1)。成功時: `{ "ok": true }`。
 
+#### POST /api/admin/works-featured — トップ表示作品の指定
+
+| パラメータ | 型 | バリデーション |
+|---|---|---|
+| ids | array | present(トップに表示する作品ID配列。最大3件・空配列で全解除) |
+
+送られた ID のみ `is_featured=true`、それ以外は `false` にリセットする。トップページ Works セクションはこの作品を表示し、1件も指定が無ければ先頭3件にフォールバックする。成功時: `{ "ok": true }`。
+
 ## データベース
 
 ### works テーブル
@@ -123,6 +131,7 @@ multipart/form-data。
 | description | text | nullable。説明文 |
 | image_path | string | `images/workN.svg`(シード)or `works/xxx.jpg`(アップロード) |
 | sort_order | integer | default 0。大きいほど先頭に表示 |
+| is_featured | boolean | default false。トップページ Works に表示する作品(最大3件) |
 | created_at / updated_at | timestamp | |
 
 その他 Laravel 標準の users / cache / jobs テーブルあり(現状 users は未使用)。
