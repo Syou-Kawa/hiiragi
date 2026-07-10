@@ -460,6 +460,48 @@ sudo systemctl restart hiiragi-frontend
 - [ ] S3 バックアップが実行されている(翌日確認)
 - [ ] SSH のソースIPが「マイIP」に絞られている
 
+## 12. アクセス解析(Google Analytics 4)
+
+訪問者数・ページ別閲覧数・流入元を日常的に確認するため、フロントに GA4 を組み込んである
+(`app/layout.tsx` で `@next/third-parties` の `<GoogleAnalytics>` を使用)。
+測定 ID は環境変数 `NEXT_PUBLIC_GA_ID` から読み、**未設定ならタグ自体が出力されない**
+(ローカル開発では計測されない)。
+
+### GA4 プロパティの作成(初回のみ)
+
+1. <https://analytics.google.com/> に Google アカウントでログイン
+2. 「管理」→「プロパティを作成」
+   - プロパティ名: `hiiragi-portfolio`、タイムゾーン: 日本、通貨: JPY
+3. データストリーム → 「ウェブ」を選択
+   - URL: `https://hiiragi-portfolio.com`、ストリーム名: 任意
+4. 発行された **測定 ID(`G-XXXXXXXXXX`)** を控える
+
+### サーバーへの設定
+
+```bash
+ssh -i ~/.ssh/hiiragi.pem ec2-user@3.114.80.53
+cd /var/www/hiiragi-portfolio-site/frontend
+
+# .env.local に測定 ID を追記
+echo 'NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX' >> .env.local
+
+# NEXT_PUBLIC_* はビルド時に埋め込まれるため再ビルドが必要
+git pull
+npm ci && npm run build
+sudo systemctl restart hiiragi-frontend
+```
+
+### 動作確認
+
+1. `https://hiiragi-portfolio.com` をブラウザで開く
+2. GA4 の「レポート」→「リアルタイム」に自分のアクセスが表示されれば OK
+   (反映まで 1〜2 分かかることがある)
+
+日常の確認は GA4 の「レポート」→「ライフサイクル」→「エンゲージメント」でページ別閲覧数、
+「集客」で流入元(検索 / SNS / 直接)が見られる。数値の反映には最大 24〜48 時間かかる。
+
+---
+
 ## 費用目安(東京リージョン)
 
 | 項目 | 月額目安 |
