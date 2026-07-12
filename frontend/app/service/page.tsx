@@ -31,7 +31,7 @@ const FLOW = [
 export default function Service() {
   return (
     <>
-      <div className="page-head">
+      <div className="page-head page-head-photo" style={{ backgroundImage: "url(/images/hero/hero-3.jpg)" }}>
         <div className="en">Service</div>
         <div className="ja">サービス内容・料金</div>
       </div>

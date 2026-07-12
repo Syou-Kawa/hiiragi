@@ -1,17 +1,19 @@
 import Link from "next/link";
 import Flower from "@/components/Flower";
+import HeroSlideshow from "@/components/HeroSlideshow";
 import SnsIcons from "@/components/SnsIcons";
 import CtaBand from "@/components/CtaBand";
 import WorksGrid from "@/components/WorksGrid";
 import { fetchWorks, type WorksResponse } from "@/lib/api";
 
 function HeroDeco({ pos }: { pos: string }) {
+  {/* 写真の上に載るため白い線画にしている */}
   return (
     <svg className={`hero-deco ${pos}`} viewBox="0 0 200 200" fill="none">
-      <path d="M20 180 Q60 120 50 70 Q45 40 70 20" stroke="#7c9a72" strokeWidth="2" />
-      <ellipse cx="72" cy="18" rx="16" ry="8" transform="rotate(-40 72 18)" stroke="#7c9a72" strokeWidth="2" />
-      <ellipse cx="48" cy="65" rx="14" ry="7" transform="rotate(30 48 65)" stroke="#7c9a72" strokeWidth="2" />
-      <ellipse cx="55" cy="120" rx="14" ry="7" transform="rotate(-25 55 120)" stroke="#7c9a72" strokeWidth="2" />
+      <path d="M20 180 Q60 120 50 70 Q45 40 70 20" stroke="#ffffff" strokeWidth="2" />
+      <ellipse cx="72" cy="18" rx="16" ry="8" transform="rotate(-40 72 18)" stroke="#ffffff" strokeWidth="2" />
+      <ellipse cx="48" cy="65" rx="14" ry="7" transform="rotate(30 48 65)" stroke="#ffffff" strokeWidth="2" />
+      <ellipse cx="55" cy="120" rx="14" ry="7" transform="rotate(-25 55 120)" stroke="#ffffff" strokeWidth="2" />
     </svg>
   );
 }
@@ -31,24 +33,33 @@ export default async function Home() {
   return (
     <>
       <section className="hero">
+        <HeroSlideshow
+          images={[
+            "/images/hero/hero-1.jpg",
+            "/images/hero/hero-2.jpg",
+            "/images/hero/hero-3.jpg",
+          ]}
+        />
         <HeroDeco pos="tl" />
         <HeroDeco pos="br" />
-        <div className="hero-icon">
-          {/* ★アイコン画像: backend/public/images/icon.jpg を差し替え */}
-          <img src={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/images/icon.jpg`} alt="ひいらぎのアイコン" />
-        </div>
-        <p className="hero-en">Web Designer / Coder</p>
-        <h1>ひいらぎ</h1>
-        <p className="role">やさしく、お客様の心に寄り添うデザインを。</p>
-        <p className="lead">
-          はじめまして、ひいらぎです。<br />
-          お客様に寄り添ったヒヤリングを大切に、<br />
-          Webサイト・LP・バナーのデザインとコーディングを承っています。
-        </p>
-        <div className="hero-btns">
-          <Link href="/contact" className="btn btn-primary">お問い合わせ</Link>
-          <Link href="/contact?kind=request" className="btn btn-accent">制作のご依頼</Link>
-          <Link href="/works" className="btn btn-outline">作品を見る</Link>
+        <div className="hero-panel">
+          <div className="hero-icon">
+            {/* ★アイコン画像: backend/public/images/icon.jpg を差し替え */}
+            <img src={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/images/icon.jpg`} alt="ひいらぎのアイコン" />
+          </div>
+          <p className="hero-en">Web Designer / Coder</p>
+          <h1>ひいらぎ</h1>
+          <p className="role">やさしく、お客様の心に寄り添うデザインを。</p>
+          <p className="lead">
+            はじめまして、ひいらぎです。<br />
+            お客様に寄り添ったヒヤリングを大切に、<br />
+            Webサイト・LP・バナーのデザインとコーディングを承っています。
+          </p>
+          <div className="hero-btns">
+            <Link href="/contact" className="btn btn-primary">お問い合わせ</Link>
+            <Link href="/contact?kind=request" className="btn btn-accent">制作のご依頼</Link>
+            <Link href="/works" className="btn btn-outline">作品を見る</Link>
+          </div>
         </div>
       </section>
 

@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "自己紹介" };
 export default function About() {
   return (
     <>
-      <div className="page-head">
+      <div className="page-head page-head-photo" style={{ backgroundImage: "url(/images/hero/hero-1.jpg)" }}>
         <div className="en">About</div>
         <div className="ja">自己紹介</div>
       </div>
